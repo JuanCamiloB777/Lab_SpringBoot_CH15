@@ -1,12 +1,13 @@
 package com.cuerpoactivo.cuerpo_activo_api.controller;
 
+import com.cuerpoactivo.cuerpo_activo_api.dto.PlanRequest;
+import com.cuerpoactivo.cuerpo_activo_api.dto.PlanResponse;
 import com.cuerpoactivo.cuerpo_activo_api.model.Plan;
+import com.cuerpoactivo.cuerpo_activo_api.service.PlanService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.cuerpoactivo.cuerpo_activo_api.service.PlanService;
 
-import javax.print.DocFlavor;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,37 +15,41 @@ import java.util.Optional;
 @RequestMapping("/api/planes")
 public class PlanController {
     private final PlanService planService;
+
     public PlanController(PlanService planService){
         this.planService = planService;
     }
 
     @GetMapping
-    public List<Plan> Listar(){
-        return planService.listar();
+    public List<PlanResponse> listar(){
+        return planService.listar()
+                .stream()
+                .map(PlanResponse::desde)
+                .toList();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Plan> validarPlan(@PathVariable Long id){
-        Optional<Plan> numero = planService.buscarId(id);
-        if(numero.isEmpty()){
+    public ResponseEntity<PlanResponse> buscarPorId(@PathVariable Long id){
+        Optional<Plan> encontrado = planService.buscarId(id);
+        if(encontrado.isEmpty()){
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(numero.get());
+        return ResponseEntity.ok(PlanResponse.desde(encontrado.get()));
     }
 
     @PostMapping
-    public ResponseEntity<Plan> crear(@RequestBody Plan nuevo){
-        Plan creado = planService.crear(nuevo);
-        return ResponseEntity.status(HttpStatus.CREATED).body(creado);
+    public ResponseEntity<PlanResponse> crear(@RequestBody PlanRequest request){
+        Plan creado = planService.crear(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(PlanResponse.desde(creado));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Plan> actualizar(@PathVariable Long id,@RequestBody Plan datos){
-        Optional<Plan> actualiza = planService.actualizar(id,datos);
-        if (actualiza.isEmpty()){
+    public ResponseEntity<PlanResponse> actualizar(@PathVariable Long id, @RequestBody PlanRequest datos){
+        Optional<Plan> actualizado = planService.actualizar(id, datos);
+        if(actualizado.isEmpty()){
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(actualiza.get());
+        return ResponseEntity.ok(PlanResponse.desde(actualizado.get()));
     }
 
     @DeleteMapping("/{id}")

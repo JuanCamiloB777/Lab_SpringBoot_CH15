@@ -31,14 +31,32 @@ test("Plan tiene su lista de socios (@OneToMany con mappedBy)", () => {
   assert.match(codigo, /@OneToMany\s*\(\s*mappedBy\s*=\s*"plan"\s*\)[\s\S]*?private\s+List\s*<\s*Socio\s*>\s+\w+/, "Plan debería tener: @OneToMany(mappedBy = \"plan\") private List<Socio> socios;");
 });
 
+// Devuelve lo que va entre los paréntesis del record, aunque los componentes
+// tengan anotaciones con paréntesis (por ejemplo, @NotBlank(message = "…") de la fase 6).
+function componentesDelRecord(codigo, nombre) {
+  const inicio = codigo.search(new RegExp(`\\brecord\\s+${nombre}\\s*\\(`));
+  if (inicio === -1) return null;
+  let i = codigo.indexOf("(", inicio) + 1;
+  const desde = i;
+  let profundidad = 1;
+  let enTexto = false;
+  for (; i < codigo.length && profundidad > 0; i++) {
+    const c = codigo[i];
+    if (c === '"' && codigo[i - 1] !== "\\") enTexto = !enTexto;
+    else if (!enTexto && c === "(") profundidad++;
+    else if (!enTexto && c === ")") profundidad--;
+  }
+  return codigo.slice(desde, i - 1);
+}
+
 test("los DTO son records: PlanRequest, PlanResponse, SocioRequest y SocioResponse", () => {
   for (const nombre of ["PlanRequest", "PlanResponse", "SocioRequest", "SocioResponse"]) {
     const codigo = exigirArchivo(`${nombre}.java`);
     assert.match(codigo, new RegExp(`\\brecord\\s+${nombre}\\s*\\(`), `${nombre} debería ser un record: public record ${nombre}(...)`);
   }
-  const planRequest = exigirArchivo("PlanRequest.java").match(/record\s+PlanRequest\s*\(([^)]*)\)/)[1];
+  const planRequest = componentesDelRecord(exigirArchivo("PlanRequest.java"), "PlanRequest").replace(/"[^"]*"/g, "\"\"");
   assert.doesNotMatch(planRequest, /\bid\b/, "PlanRequest no debe tener id: el id lo decide la base de datos");
-  const socioRequest = exigirArchivo("SocioRequest.java").match(/record\s+SocioRequest\s*\(([^)]*)\)/)[1];
+  const socioRequest = componentesDelRecord(exigirArchivo("SocioRequest.java"), "SocioRequest");
   assert.match(socioRequest, /\bLong\s+planId\b/, "SocioRequest debería tener Long planId: el cliente dice a qué plan se inscribe");
 });
 

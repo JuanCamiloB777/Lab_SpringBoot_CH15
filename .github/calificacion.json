@@ -18,6 +18,7 @@
     { "id": "04", "titulo": "Fase 3 · JPA y PostgreSQL", "test": "tests/04-jpa.test.js" },
     { "id": "05", "titulo": "Fase 4 · CRUD con códigos HTTP", "test": "tests/05-crud.test.js" },
     { "id": "06", "titulo": "Fase 4 · Swagger", "test": "tests/06-swagger.test.js" },
-    { "id": "07", "titulo": "Fase 5 · Socios y DTO", "test": "tests/07-socios-dto.test.js" }
+    { "id": "07", "titulo": "Fase 5 · Socios y DTO", "test": "tests/07-socios-dto.test.js" },
+    { "id": "08", "titulo": "Fase 6 · Validaciones y errores", "test": "tests/08-errores.test.js" }
   ]
 }

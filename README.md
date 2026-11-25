@@ -14,7 +14,7 @@ Vas a construir esa **API**: el backend que guarda los planes y responde por HTT
 
 ### Es el espejo de Café Origen
 
-En clase construimos la API de Café Origen. Tú construyes, sola o solo, la del gimnasio, en **cinco fases**.
+En clase construimos la API de Café Origen. Tú construyes, sola o solo, la del gimnasio, en **seis fases**.
 Cada fase repite lo que hicimos en una sesión, con planes en vez de productos.
 
 ### Tu nota se calcula sola
@@ -34,21 +34,22 @@ Algunos tests revisan **cómo** está organizado tu código: por ejemplo, que `P
 
 ---
 
-## Las cinco fases
+## Las seis fases
 
 | # | Fase | Qué revisa | Tests | Tu nota al terminarla |
 |---|---|---|---|---|
 | 01 | 1 · Spring Boot | Tu proyecto del Initializr y que arranque | 5 | |
-| 02 | 1 · Spring Boot | `Plan`, `GET` y `POST` | 5 | **1.4** |
-| 03 | 2 · Capas | Interfaz, servicio e inyección por constructor | 4 | **1.9** |
-| 04 | 3 · JPA | Entidad, `JpaRepository`, PostgreSQL y que los datos sobrevivan a un reinicio | 6 | **2.8** |
+| 02 | 1 · Spring Boot | `Plan`, `GET` y `POST` | 5 | **1.1** |
+| 03 | 2 · Capas | Interfaz, servicio e inyección por constructor | 4 | **1.5** |
+| 04 | 3 · JPA | Entidad, `JpaRepository`, PostgreSQL y que los datos sobrevivan a un reinicio | 6 | **2.2** |
 | 05 | 4 · CRUD completo | `404`, `201`, `PUT` y `DELETE` | 6 | |
-| 06 | 4 · CRUD completo | Swagger | 3 | **4.0** |
-| 07 | 5 · Socios y DTO | `Socio` con su `Plan`, los records y que el JSON no se rompa | 7 | **5.0** |
+| 06 | 4 · CRUD completo | Swagger | 3 | **3.2** |
+| 07 | 5 · Socios y DTO | `Socio` con su `Plan`, los records y que el JSON no se rompa | 7 | **3.9** |
+| 08 | 6 · Validaciones y errores | Reglas en los records, `@Valid`, excepciones propias y un solo manejador de errores | 10 | **5.0** |
 
-Las fases se hacen **en orden, sobre el mismo proyecto**: la fase 2 reorganiza la fase 1, la fase 3 cambia la lista en memoria por PostgreSQL, la fase 4 completa el CRUD y la fase 5 agrega los socios.
+Las fases se hacen **en orden, sobre el mismo proyecto**: la fase 2 reorganiza la fase 1, la fase 3 cambia la lista en memoria por PostgreSQL, la fase 4 completa el CRUD, la fase 5 agrega los socios y la fase 6 valida los datos y ordena los errores.
 
-> **¿Tu nota bajó?** Si ya tenías 5.0 con tres fases, ahora verás 2.8: llegaron los tests de las fases 4 y 5. No perdiste nada: te faltan las dos fases nuevas.
+> **¿Tu nota bajó?** Si ya tenías 5.0 con cinco fases, ahora verás 3.9: llegaron los tests de la fase 6. No perdiste nada: te falta la fase nueva.
 
 ---
 
@@ -184,7 +185,7 @@ En el paquete `controller`, crea `PlanController.java`, con `@RestController` y 
 - [ ] El proyecto arranca y la consola dice `Tomcat started on port 8080`.
 - [ ] En Postman, `GET http://localhost:8080/api/planes` muestra los 3 planes.
 - [ ] `POST` con `{ "nombre": "Plan semestral", "duracionMeses": 6, "precio": 630000 }` responde el plan con `id` 4.
-- [ ] `npm test` muestra los ejercicios 01 y 02 en ✅ (nota **1.4**).
+- [ ] `npm test` muestra los ejercicios 01 y 02 en ✅ (nota **1.1**).
 
 ---
 
@@ -205,7 +206,7 @@ Reorganiza lo de la fase 1 en tres capas. La API debe responder **igual** que an
 - [ ] `buscarPorId` del repositorio devuelve `Optional<Plan>`.
 - [ ] El servicio pone `setId(null)` antes de guardar un plan nuevo.
 - [ ] Postman responde exactamente lo mismo que en la fase 1.
-- [ ] `npm test` muestra el ejercicio 03 en ✅ (nota **1.9**).
+- [ ] `npm test` muestra el ejercicio 03 en ✅ (nota **1.5**).
 
 ---
 
@@ -278,7 +279,7 @@ La columna se llama `duracion_meses`: Hibernate convierte `duracionMeses` a min�
 - [ ] Al arrancar, la consola muestra `Hibernate: create table plan (...)` (solo la primera vez).
 - [ ] En pgAdmin aparece la tabla `plan` (clic derecho en **Tables** → **Refresh**).
 - [ ] `POST` crea un plan, **detienes** la app, la vuelves a arrancar y `GET /api/planes` lo sigue mostrando.
-- [ ] `npm test` muestra los ejercicios 01 a 04 en ✅ (nota **2.8**).
+- [ ] `npm test` muestra los ejercicios 01 a 04 en ✅ (nota **2.2**).
 
 ---
 
@@ -329,7 +330,7 @@ Recarga Maven, arranca y abre `http://localhost:8080/swagger-ui.html`. Ahí est�
 - [ ] `PUT /api/planes/1` con `{ "nombre": "Plan mensual", "duracionMeses": 1, "precio": 125000 }` responde `200`, y pgAdmin muestra el precio nuevo.
 - [ ] `DELETE` de un plan recién creado responde `204`; el mismo `DELETE` otra vez responde `404`.
 - [ ] Swagger UI abre en el navegador.
-- [ ] `npm test` muestra los ejercicios 01 a 06 en ✅ (nota **4.0**).
+- [ ] `npm test` muestra los ejercicios 01 a 06 en ✅ (nota **3.2**).
 
 ---
 
@@ -398,9 +399,121 @@ Después de inscribir socios, `GET /api/planes` debe seguir mostrando una lista 
 - [ ] `POST /api/socios` responde `201` con el **nombre** del plan.
 - [ ] `POST /api/socios` con un plan que no existe responde `400`.
 - [ ] `GET /api/planes` y `GET /api/socios` responden JSON corto, sin bucle.
-- [ ] `npm test` muestra los 7 ejercicios en ✅ (nota **5.0**).
+- [ ] `npm test` muestra los ejercicios 01 a 07 en ✅ (nota **3.9**).
 
 > **Ojo con `DELETE`:** si borras un plan que tiene socios, PostgreSQL lo impide (la llave foránea) y la API responde `500`. Prueba `DELETE` con un plan sin socios.
+
+---
+
+## Fase 6 · Validaciones y errores (como la sesión 5)
+
+Hoy tu API acepta un plan sin nombre o con precio negativo, y sus errores salen mudos: un `404` o un `400` sin explicación. En esta fase, la API revisa lo que entra y cada error responde con un mensaje claro, desde **un solo lugar**. Es el mismo cambio que hicimos en Café Origen.
+
+### 6.1 · La dependencia
+
+En `pom.xml`, dentro de `<dependencies>`, después de `postgresql`:
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-validation</artifactId>
+</dependency>
+```
+
+Recarga Maven. (springdoc ya trae la validación escondida, pero un proyecto declara lo que usa.)
+
+### 6.2 · Las reglas en los records
+
+Cada regla lleva su `message`, escrito por ti:
+
+| Record | Dato | Regla |
+|---|---|---|
+| `PlanRequest` | `nombre` | `@NotBlank` |
+| `PlanRequest` | `duracionMeses` | `@Positive` |
+| `PlanRequest` | `precio` | `@Positive` |
+| `SocioRequest` | `nombre` | `@NotBlank` |
+| `SocioRequest` | `planId` | `@NotNull` |
+
+Ejemplo, como en `ProductoRequest`:
+
+```java
+public record PlanRequest(
+        @NotBlank(message = "El nombre es obligatorio")
+        String nombre,
+        ...
+```
+
+Los imports son de `jakarta.validation.constraints` (no de `javax`).
+
+### 6.3 · `@Valid` en los controladores
+
+Antes de `@RequestBody`, en `crear` y `actualizar` de `PlanController`, y en `crear` de `SocioController`:
+
+```java
+public ResponseEntity<PlanResponse> crear(@Valid @RequestBody PlanRequest request) {
+```
+
+Sin `@Valid`, las anotaciones no hacen nada.
+
+### 6.4 · La forma de los errores
+
+En el paquete `dto`, el record `ErrorResponse`:
+
+```java
+public record ErrorResponse(int status, String mensaje, Map<String, String> campos) {
+}
+```
+
+### 6.5 · Las excepciones y el manejador
+
+Crea el paquete `exception` con tres clases, como en Café Origen:
+
+| Clase | Qué es |
+|---|---|
+| `RecursoNoEncontradoException` | `extends RuntimeException`, con un constructor que recibe el mensaje y llama `super(mensaje)` |
+| `ReglaDeNegocioException` | Igual, para un dato que rompe una regla del negocio |
+| `ManejadorDeErrores` | `@RestControllerAdvice` con cuatro `@ExceptionHandler` |
+
+Los cuatro métodos del manejador:
+
+| Excepción que atiende | Responde |
+|---|---|
+| `MethodArgumentNotValidException` | `400` con un mensaje por cada campo en `campos` |
+| `HttpMessageNotReadableException` | `400` con un mensaje (el JSON no se pudo leer) |
+| `RecursoNoEncontradoException` | `404` con el mensaje de la excepción |
+| `ReglaDeNegocioException` | `400` con el mensaje de la excepción |
+
+### 6.6 · Los servicios avisan; los controladores ya no revisan
+
+| Archivo | Cambio |
+|---|---|
+| `PlanService.java` | `buscarPorId` devuelve `Plan` y, si no existe, lanza `RecursoNoEncontradoException("No existe el plan con id " + id)`. `actualizar` devuelve `Plan` (usa `buscarPorId`). `eliminar` es `void` y lanza la misma excepción si el plan no existe |
+| `SocioService.java` | `buscarPorId` devuelve `Socio` o lanza `RecursoNoEncontradoException("No existe el socio con id " + id)`. `crear` devuelve `Socio` y, si el plan no existe, lanza `ReglaDeNegocioException("No existe el plan con id " + planId)` |
+| `PlanController.java` y `SocioController.java` | Sin `Optional` ni `if` de errores: cada método llama al servicio y responde el caso feliz (`200`, `201`, `204`). Borra el `import java.util.Optional;` |
+
+### 6.7 · Pruébalo en Postman
+
+```text
+POST http://localhost:8080/api/planes   { "nombre": "", "duracionMeses": 0, "precio": -1 }
+→ 400 · {"status":400,"mensaje":"Hay datos inválidos en la solicitud","campos":{"duracionMeses":"La duración debe ser mayor que cero","nombre":"El nombre es obligatorio","precio":"El precio debe ser mayor que cero"}}
+
+GET  http://localhost:8080/api/planes/999
+→ 404 · {"status":404,"mensaje":"No existe el plan con id 999","campos":{}}
+
+POST http://localhost:8080/api/socios   { "nombre": "Valentina Rojas", "planId": 999 }
+→ 400 · {"status":400,"mensaje":"No existe el plan con id 999","campos":{}}
+```
+
+Tus mensajes pueden decir otra cosa; lo que importa es que existan, y que los de "no existe" digan el `id`.
+
+### ✅ Checklist de la fase 6
+
+- [ ] Un `POST` de plan con datos malos responde `400` con un mensaje por campo.
+- [ ] Un `PUT` de plan con el nombre vacío también responde `400`.
+- [ ] `GET`, `PUT` y `DELETE` de un plan que no existe responden `404` con un mensaje que dice el `id`.
+- [ ] `POST /api/socios` sin `planId` responde `400` (ya no `500`).
+- [ ] `PlanController` y `SocioController` ya no tienen `Optional`.
+- [ ] `npm test` muestra los 8 ejercicios en ✅ (nota **5.0**).
 
 ---
 
@@ -572,7 +685,31 @@ El texto de `mappedBy` debe ser **igual** al nombre del atributo en `Socio`: `ma
 
 ### «POST /api/socios … respondió 500»
 
-Revisa que el cuerpo traiga `planId`. Sin él, `findById(null)` falla con `The given id must not be null`.
+Revisa que el cuerpo traiga `planId`. Sin él, `findById(null)` falla con `The given id must not be null`. En la fase 6 esto se resuelve con `@NotNull` en `planId` y `@Valid` en `SocioController`.
+
+### «… creó el plan (respondió 201): ¿falta @Valid…?»
+
+Las anotaciones de `PlanRequest` no se revisan solas: escribe `@Valid` antes de `@RequestBody` en `crear` y `actualizar`.
+
+### «en «campos» falta el mensaje de «…»»
+
+A ese dato le falta su anotación en el record, o el manejador no está llenando `campos` con `getFieldErrors()`.
+
+### «… debería responder un JSON con status, mensaje y campos…»
+
+La respuesta salió con el formato de Spring (`timestamp`, `error`, `path`): tu `ManejadorDeErrores` no atendió esa excepción. Revisa que tenga `@RestControllerAdvice` y el `@ExceptionHandler` que corresponde.
+
+### «en el JSON falta «mensaje» o viene vacío»
+
+Falta `super(mensaje);` en el constructor de tu excepción: el texto nunca se guardó.
+
+### «package javax.validation.constraints does not exist»
+
+El import es del paquete viejo. En Spring Boot 4 es `jakarta.validation.constraints`.
+
+### «unreported exception … must be caught or declared to be thrown»
+
+Tu excepción extiende `Exception`. Cámbiala a `extends RuntimeException`.
 
 ### «Please tell me who you are»
 

@@ -1,6 +1,8 @@
 package com.cuerpoactivo.cuerpo_activo_api.service;
 
 import com.cuerpoactivo.cuerpo_activo_api.dto.SocioRequest;
+import com.cuerpoactivo.cuerpo_activo_api.exception.RecursoNoEncontradoException;
+import com.cuerpoactivo.cuerpo_activo_api.exception.ReglaDeNegocioException;
 import com.cuerpoactivo.cuerpo_activo_api.model.Plan;
 import com.cuerpoactivo.cuerpo_activo_api.model.Socio;
 import com.cuerpoactivo.cuerpo_activo_api.repository.PlanRepository;
@@ -24,21 +26,25 @@ public class SocioService {
         return socioRepository.findAll();
     }
 
-    public Optional<Socio> buscarPorId(Long id){
-        return socioRepository.findById(id);
+    public Socio buscarPorId(Long id){
+        Optional<Socio> encontrado = socioRepository.findById(id);
+        if(encontrado.isEmpty()){
+            throw new RecursoNoEncontradoException("No existe el socio con id " + id);
+        }
+        return encontrado.get();
     }
 
-    public Optional<Socio> crear(SocioRequest request){
-        if(request.planId() == null){
-            return Optional.empty();
-        }
+    public Socio crear(SocioRequest request){
+        Plan plan = buscarPlan(request.planId());
+        Socio socio = request.aEntidad(plan);
+        return socioRepository.save(socio);
+    }
 
-        Optional<Plan> plan = planRepository.findById(request.planId());
+    private Plan buscarPlan(Long planId){
+        Optional<Plan> plan = planRepository.findById(planId);
         if(plan.isEmpty()){
-            return Optional.empty();
+            throw new ReglaDeNegocioException("No existe el plan con id " + planId);
         }
-
-        Socio socio = request.aEntidad(plan.get());
-        return Optional.of(socioRepository.save(socio));
+        return plan.get();
     }
 }
